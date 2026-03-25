@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Réponses — Nuage de réponses</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0f1117;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(15, 17, 23, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1e2130;
+      padding: 1.2rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #a0a8c8;
+      white-space: nowrap;
+    }
+
+    #column-select {
+      flex: 1;
+      min-width: 200px;
+      max-width: 700px;
+      padding: 0.55rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid #2a2d40;
+      background: #181a24;
+      color: #ddd;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #column-select:focus {
+      border-color: #5b6eae;
+    }
+
+    #count-badge {
+      font-size: 0.85rem;
+      color: #6a7194;
+      white-space: nowrap;
+    }
+
+    #cloud {
+      padding: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .bubble {
+      background: linear-gradient(135deg, #1a1d2e 0%, #22253a 100%);
+      border: 1px solid #2a2d48;
+      border-radius: 14px;
+      padding: 1rem 1.3rem;
+      max-width: 420px;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: #c8cce0;
+      opacity: 0;
+      transform: translateY(18px) scale(0.96);
+      animation: appear 0.45s ease forwards;
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      cursor: default;
+      word-break: break-word;
+    }
+
+    .bubble:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 28px rgba(91, 110, 174, 0.15);
+      border-color: #3e4568;
+    }
+
+    /* Color variations */
+    .bubble.v0 { border-left: 3px solid #5b6eae; }
+    .bubble.v1 { border-left: 3px solid #6ea97e; }
+    .bubble.v2 { border-left: 3px solid #ae835b; }
+    .bubble.v3 { border-left: 3px solid #9b5bae; }
+    .bubble.v4 { border-left: 3px solid #ae5b6e; }
+    .bubble.v5 { border-left: 3px solid #5baeae; }
+
+    @keyframes appear {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #4a4f6a;
+      margin-top: 8rem;
+      font-size: 1.1rem;
+    }
+
+    /* Staggered animation delays */
+    .bubble:nth-child(1)  { animation-delay: 0.00s; }
+    .bubble:nth-child(2)  { animation-delay: 0.03s; }
+    .bubble:nth-child(3)  { animation-delay: 0.06s; }
+    .bubble:nth-child(4)  { animation-delay: 0.09s; }
+    .bubble:nth-child(5)  { animation-delay: 0.12s; }
+    .bubble:nth-child(6)  { animation-delay: 0.15s; }
+    .bubble:nth-child(7)  { animation-delay: 0.18s; }
+    .bubble:nth-child(8)  { animation-delay: 0.21s; }
+    .bubble:nth-child(9)  { animation-delay: 0.24s; }
+    .bubble:nth-child(10) { animation-delay: 0.27s; }
+    .bubble:nth-child(n+11) { animation-delay: 0.30s; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Nuage de réponses</h1>
+    <select id="column-select">
+      <option value="">— Sélectionnez une colonne —</option>
+    </select>
+    <span id="count-badge"></span>
+  </header>
+  <div id="cloud">
+    <p class="empty-state">Sélectionnez une colonne pour afficher les réponses.</p>
+  </div>
+
+  <script>
+    let DATA = {};
+
+    // Columns to hide (metadata, not useful to display)
+    const HIDDEN = new Set([
+      'Response Type', 'Start Date (UTC)', 'Stage Date (UTC)',
+      'Submit Date (UTC)', 'Network ID', 'Tags', 'Ending',
+      'NOM et prénom (facultatif)'
+    ]);
+
+    async function init() {
+      const resp = await fetch('responses_data.json');
+      DATA = await resp.json();
+
+      const select = document.getElementById('column-select');
+      for (const key of Object.keys(DATA)) {
+        if (HIDDEN.has(key)) continue;
+        if (DATA[key].length === 0) continue;
+        // Only show columns with at least 10 unique responses (skip structured/Likert)
+        const unique = new Set(DATA[key]).size;
+        if (unique < 10) continue;
+        const opt = document.createElement('option');
+        opt.value = key;
+        // Truncate long labels for the dropdown
+        opt.textContent = key.length > 120 ? key.slice(0, 117) + '…' : key;
+        opt.title = key;
+        select.appendChild(opt);
+      }
+      select.addEventListener('change', render);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
+    function render() {
+      const col = document.getElementById('column-select').value;
+      const cloud = document.getElementById('cloud');
+      const badge = document.getElementById('count-badge');
+
+      if (!col || !DATA[col]) {
+        cloud.innerHTML = '<p class="empty-state">Sélectionnez une colonne pour afficher les réponses.</p>';
+        badge.textContent = '';
+        return;
+      }
+
+      const values = DATA[col];
+      badge.textContent = values.length + ' réponse' + (values.length > 1 ? 's' : '');
+
+      // Shuffle for visual variety
+      const shuffled = [...values].sort(() => Math.random() - 0.5);
+
+      cloud.innerHTML = '';
+      for (let i = 0; i < shuffled.length; i++) {
+        const div = document.createElement('div');
+        div.className = 'bubble v' + (i % 6);
+        div.textContent = shuffled[i];
+        cloud.appendChild(div);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
