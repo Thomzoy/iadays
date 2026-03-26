@@ -37,7 +37,7 @@
             "Lilia Ivanova",
             "Edouard Gourier"
         ],
-        "description": "Group description"
+        "description": "Analysez, sous les angles philosophique, éthique, déontologique et épistémologique, les valeurs qu’ipso santé souhaiterait défendre dans le cadre d’une éventuelle implémentation de l’IA. Une suggestion de travail serait de créer deux colonnes : “ce qu’il ne faut pas faire (et pourquoi)” et “ce qu’il faut faire (et pourquoi)”. Tentez de dégager des grands principes et préparez une synthèse argumentée. Vous pouvez vous appuyer sur le support de présentation et les réponses au questionnaire"
     },
     {
         "groupe": "doctrine (2)",
@@ -51,7 +51,7 @@
             "Yasmine JAYYOSI",
             "Chlo\u00e9 BOUTCHNEI"
         ],
-        "description": "Group description"
+        "description": "Analysez, sous les angles philosophique, éthique, déontologique et épistémologique, les valeurs qu’ipso santé souhaiterait défendre dans le cadre d’une éventuelle implémentation de l’IA. Une suggestion de travail serait de créer deux colonnes : “ce qu’il ne faut pas faire (et pourquoi)” et “ce qu’il faut faire (et pourquoi)”. Tentez de dégager des grands principes et préparez une synthèse argumentée. Vous pouvez vous appuyer sur le support de présentation et les réponses au questionnaire"
     },
     {
         "groupe": "le pour et le contre (1)",
@@ -92,7 +92,7 @@
             "Victorien LAHSEN",
             "Roman Dubois"
         ],
-        "description": "Analysez les risques liés à l’usage de l’IA chez ipso santé et positionnez-les selon leur gravité/probabilité, puis identifiez des solutions pour y faire face. Préparez ensuite une synthèse argumentée.  Vous pouvez vous appuyer sur le support de présentation et les réponses au questionnaire"
+        "description": "<p>Analysez les risques liés à l’usage de l’IA chez ipso santé et positionnez-les selon leur gravité/probabilité, puis identifiez des solutions pour y faire face. Préparez ensuite une synthèse argumentée.  Vous pouvez vous appuyer sur le support de présentation et les réponses au questionnaire via les deux QR codes.</p><i>A titre d’information, les typologies principales : qualité et fiabilité du soin, risques éthiques, risques relationnels, risques liés aux données, risques organisationnels et risques écologiques.</i>"
     },
     {
         "groupe": "risques\/solutions (2)",
@@ -106,6 +106,6 @@
             "Guillaume ALGIS",
             "Juien FOND"
         ],
-        "description": "Analysez les risques liés à l’usage de l’IA chez ipso santé et positionnez-les selon leur gravité/probabilité, puis identifiez des solutions pour y faire face. Préparez ensuite une synthèse argumentée.  Vous pouvez vous appuyer sur le support de présentation et les réponses au questionnaire"
+        "description": "<p>Analysez les risques liés à l’usage de l’IA chez ipso santé et positionnez-les selon leur gravité/probabilité, puis identifiez des solutions pour y faire face. Préparez ensuite une synthèse argumentée.  Vous pouvez vous appuyer sur le support de présentation et les réponses au questionnaire via les deux QR codes.</p><i>A titre d’information, les typologies principales : qualité et fiabilité du soin, risques éthiques, risques relationnels, risques liés aux données, risques organisationnels et risques écologiques.</i>"
     }
 ]

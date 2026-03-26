@@ -62,7 +62,7 @@
 
     function openModal(title, description) {
       document.getElementById('modal-title').textContent = title;
-      document.getElementById('modal-content').textContent = description;
+      document.getElementById('modal-content').innerHTML = description;
       document.getElementById('modal-overlay').classList.add('active');
       document.body.style.overflow = 'hidden';
     }

@@ -378,3 +378,38 @@ header nav a.active {
   line-height: 1.6;
   color: rgba(22, 27, 86, 0.8);
 }
+
+.modal-content p {
+  margin-bottom: 1rem;
+}
+
+.modal-content p:last-child {
+  margin-bottom: 0;
+}
+
+.modal-content ul,
+.modal-content ol {
+  margin: 0.5rem 0 1rem 1.5rem;
+}
+
+.modal-content li {
+  margin-bottom: 0.3rem;
+}
+
+.modal-content strong {
+  font-weight: 600;
+  color: #161B56;
+}
+
+.modal-content em {
+  font-style: italic;
+}
+
+.modal-content a {
+  color: #5b6eae;
+  text-decoration: underline;
+}
+
+.modal-content a:hover {
+  color: #161B56;
+}
