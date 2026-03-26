@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuage de réponses</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1><a href="index.html">Journée IA</a></h1>
+    <select id="column-select">
+      <option value="">— sélectionne une colonne —</option>
+    </select>
+    <span id="count-badge"></span>
+    <nav>
+      <a href="reponses.html" class="active">réponses</a>
+      <a href="repartition.html">répartition</a>
+    </nav>
+  </header>
+  <div id="cloud">
+    <p class="empty-state">sélectionne une colonne pour afficher les réponses.</p>
+  </div>
+
+  <script>
+    let DATA = {};
+
+    const HIDDEN = new Set([
+      'Response Type', 'Start Date (UTC)', 'Stage Date (UTC)',
+      'Submit Date (UTC)', 'Network ID', 'Tags', 'Ending',
+      'NOM et prénom (facultatif)'
+    ]);
+
+    async function init() {
+      const resp = await fetch('responses_data.json');
+      DATA = await resp.json();
+
+      const select = document.getElementById('column-select');
+      for (const key of Object.keys(DATA)) {
+        if (HIDDEN.has(key)) continue;
+        if (DATA[key].length === 0) continue;
+        const unique = new Set(DATA[key]).size;
+        if (unique < 10) continue;
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = key.length > 120 ? key.slice(0, 117) + '…' : key;
+        opt.title = key;
+        select.appendChild(opt);
+      }
+      select.addEventListener('change', render);
+    }
+
+    function render() {
+      const col = document.getElementById('column-select').value;
+      const cloud = document.getElementById('cloud');
+      const badge = document.getElementById('count-badge');
+
+      if (!col || !DATA[col]) {
+        cloud.innerHTML = '<p class="empty-state">sélectionne une colonne pour afficher les réponses.</p>';
+        badge.textContent = '';
+        return;
+      }
+
+      const values = DATA[col];
+      badge.textContent = values.length + ' réponse' + (values.length > 1 ? 's' : '');
+
+      const shuffled = [...values].sort(() => Math.random() - 0.5);
+
+      cloud.innerHTML = '';
+      for (let i = 0; i < shuffled.length; i++) {
+        const div = document.createElement('div');
+        div.className = 'card v' + (i % 6);
+        div.textContent = shuffled[i];
+        cloud.appendChild(div);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

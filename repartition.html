@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Répartition des groupes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1><a href="index.html">Journée IA</a></h1>
+    <span id="count-badge"></span>
+    <nav>
+      <a href="reponses.html">réponses</a>
+      <a href="repartition.html" class="active">répartition</a>
+    </nav>
+  </header>
+  <div id="groups-container">
+    <p class="empty-state">Chargement...</p>
+  </div>
+
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title"></h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modal-content" class="modal-content"></div>
+    </div>
+  </div>
+
+  <script>
+    async function init() {
+      try {
+        const resp = await fetch('groups.json');
+        const groups = await resp.json();
+        
+        if (!groups || groups.length === 0) {
+          showEmpty('Aucune donnée trouvée.');
+          return;
+        }
+
+        render(groups);
+      } catch (e) {
+        showEmpty('Erreur lors du chargement des données.');
+        console.error(e);
+      }
+    }
+
+    function showEmpty(message) {
+      document.getElementById('groups-container').innerHTML = 
+        `<p class="empty-state">${message}</p>`;
+      document.getElementById('count-badge').textContent = '';
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
+    function openModal(title, description) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-content').textContent = description;
+      document.getElementById('modal-overlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    function render(groups) {
+      const container = document.getElementById('groups-container');
+      const badge = document.getElementById('count-badge');
+      
+      const totalPersons = groups.reduce((sum, g) => sum + g.nom.length, 0);
+      
+      badge.textContent = `${groups.length} groupe${groups.length > 1 ? 's' : ''} · ${totalPersons} personne${totalPersons > 1 ? 's' : ''}`;
+
+      container.innerHTML = '';
+      
+      groups.forEach((group, idx) => {
+        const members = [...group.nom].sort((a, b) => a.localeCompare(b, 'fr'));
+        
+        const card = document.createElement('div');
+        card.className = `card v${idx % 6}`;
+        
+        const titleRow = document.createElement('div');
+        titleRow.className = 'group-title-row';
+        
+        const title = document.createElement('div');
+        title.className = 'group-title';
+        title.innerHTML = escapeHtml(group.groupe) + 
+          `<span class="group-count">(${members.length})</span>`;
+        titleRow.appendChild(title);
+        
+        if (group.description) {
+          const infoBtn = document.createElement('button');
+          infoBtn.className = 'info-btn';
+          infoBtn.innerHTML = 'ℹ';
+          infoBtn.title = 'Voir la description';
+          infoBtn.onclick = () => openModal(group.groupe, group.description);
+          titleRow.appendChild(infoBtn);
+        }
+        
+        card.appendChild(titleRow);
+        
+        const list = document.createElement('ul');
+        list.className = 'members-list';
+        members.forEach(name => {
+          const li = document.createElement('li');
+          li.textContent = name;
+          list.appendChild(li);
+        });
+        card.appendChild(list);
+        
+        container.appendChild(card);
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
